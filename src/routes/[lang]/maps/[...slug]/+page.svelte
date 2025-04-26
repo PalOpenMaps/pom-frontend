@@ -291,7 +291,7 @@
 				attribution={false}
 				controls={['compass', 'pitch', 'locate']}
 				options={{ maxBounds }}>
-				<MapSource id="basemap" type="raster" url={side == 'left' ? layer.url : layers[0].url} maxzoom={17}>
+				<MapSource id="basemap" type="raster" url={side == 'left' ? layer.url : layers[0].url} maxzoom={layer.id === 15 ? 19 : 17}>
 					<MapLayer
 						id="basemap"
 						type="raster"
