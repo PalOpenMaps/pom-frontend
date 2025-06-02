@@ -1,0 +1,1 @@
+const s="https://palopenmaps.github.io/pom-data",a="https://palopenmaps.org",t=`${s}/data/places.json`,o=`${s}/data/redirects.json`,n=`${s}/data/config.json`,c=`${s}/data/sheets.json`,e=[[30.5,29],[39.4,33.9]];export{s as a,a as b,n as c,t as l,e as m,o as r,c as s};
