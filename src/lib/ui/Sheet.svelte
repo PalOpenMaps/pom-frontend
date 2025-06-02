@@ -1,24 +1,28 @@
 <script>
   import { getContext } from "svelte";
-  import { base } from "$app/paths";
+  import { cdnBase } from "$lib/config";
   import Icon from "./Icon.svelte";
+
   export let sheet;
+  export let config;
 
 	const t = getContext("t");
+  const layer = config.layers[sheet.layer];
+  const author = layer.author.map(a => config.authors[a]);
 </script>
 
 <div class="sheet">
   <div>
     <a href="{sheet.dropbox_link}">
-      <img src="{base}/img/thumb/{sheet.layer}/{sheet.file_name}" alt="{sheet.name}">
+      <img src="{cdnBase}/assets/img/thumb/{layer.id}/{sheet.file_name}" alt="{sheet.name}">
     </a>
   </div>
   <div class="sheet-info">
-    <h3>{sheet.name}</h3>
+    <h3>{$t(sheet)}</h3>
     <p>
-      <strong>{$t(sheet.author)}</strong>
-      {$t('Scale')}: 1:{sheet.scale.toLocaleString()}<br/>
-      {$t('Date')}: {sheet.year}
+      <strong>{author.map(a => $t(a)).join(", ")}</strong>
+      {$t('Scale')}: 1:{layer.scale.toLocaleString()}<br/>
+      {$t('Date')}: {sheet.year || ""}
     </p>
     <a name="Download sheet" href="{sheet.dropbox_link}">
       <Icon type="download"/>

@@ -1,3 +1,4 @@
+import bboxPolygon from "@turf/bbox-polygon";
 import { cdnBase } from "./config";
 
 export async function getPlaces(url, fetch = window.fetch) {
@@ -33,12 +34,10 @@ export function makeFilter(statuses, groups, year) {
 
 export async function getConfig(url, fetch = window.fetch) {
 	const config = await (await fetch(url)).json();
-	config.overlays = Object.values(config.layers).filter(l => l.is_overlay);
-	config.layers = Object.values(config.layers).filter(l => !l.is_overlay);
 	return config;
 }
 
-export async function getSheets(url, layers, fetch = window.fetch) {
+export async function getSheets(url, config, fetch = window.fetch) {
 	let res = await fetch(url);
 	let sheets = await res.json();
 	sheets.sort((a, b) => a.layer - b.layer);
@@ -49,21 +48,19 @@ export async function getSheets(url, layers, fetch = window.fetch) {
 	};
 
 	for (const sheet of sheets) {
-		let props = Object.fromEntries(Object.entries(sheet).filter(([key]) => key != "boundaries"));
-		let layer = layers.find(l => l.name_en == sheet.layer);
-		// props.year = props.year ? props.year.split("-")[0] : layer.start_year.split("-")[0];
+		const props = Object.fromEntries(Object.entries(sheet).filter(([key]) => key !== "bbox"));
+		const layer = config.layers[sheet.layer];
 
-		geojson.features.push({
-			properties: {...props, scale: layer.scale, author: layer.author.join(", ")},
-			geometry: sheet.boundaries
-		});
+		geojson.features.push(bboxPolygon(sheet.bbox, {
+			properties: {...props, layer_id: layer.id}
+		}));
 	}
 	return geojson;
 }
 
 export function i18n(key, texts, lang) {
 	if (typeof key === "object") {
-		return key[`name_${lang}`] || key[`${lang}`] || key.name;
+		return key[`name_${lang}`] || key[`${lang}`] || key.name || key.name_en;
 	}
 	return texts?.[key]?.[lang] || key;
 }

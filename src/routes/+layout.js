@@ -6,7 +6,7 @@ import { getPlaces, getConfig, getSheets } from "$lib/utils";
 export async function load({ fetch }) {
 	let places = await getPlaces(locs_url, fetch);
 	let config = await getConfig(config_url, fetch);
-	let sheets = await getSheets(sheets_url, config.layers, fetch);
+	let sheets = await getSheets(sheets_url, config, fetch);
 
 	return { places, config, sheets };
 }

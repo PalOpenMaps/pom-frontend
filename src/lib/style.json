@@ -1,7 +1,7 @@
 {
   "version": 8,
-  "sprite": "https://cdn.jsdelivr.net/gh/bothness/basemaps/sprites/omt-street",
-  "glyphs": "https://cdn.jsdelivr.net/gh/bothness/basemaps/fonts/{fontstack}/{range}.pbf",
+  "sprite": "https://palopenmaps.github.io/pom-data/assets/sprites/omt-street",
+  "glyphs": "https://palopenmaps.github.io/pom-data/assets/fonts/{fontstack}/{range}.pbf",
   "sources": {},
   "layers": [
     {

@@ -8,7 +8,7 @@
 	import { afterNavigate, goto } from "$app/navigation";
 	import mapStyle from "$lib/style.json";
 	import { makeDataset, makeColors, makeFilter } from "$lib/utils";
-	import { maxBounds, base_url } from "$lib/config";
+	import { maxBounds, cdnBase } from "$lib/config";
 	import { Map, MapSource, MapLayer, MapTooltip } from "@onsvisual/svelte-maps";
 
 	import MapCompare from "$lib/map/MapCompare.svelte";
@@ -32,8 +32,15 @@
 	const t = getContext("t");
 	const menu_active = getContext("menu_active");
 
-	let layer = config.layers.find(l => l.is_default);
-	let overlay = config.overlays.find(l => l.is_default);
+	const color_options = [{key: "status", label: "change since 1948"}, {key: "group", label: "population group"}];
+	const year_min_max = [1881, (new Date()).getFullYear()];
+	const statuses_arr = Object.keys(config.statuses).map(key => ({key, ...config.statuses[key]}));
+	const groups_arr = Object.keys(config.groups).map(key => ({key, ...config.groups[key]}));
+	const layers_arr = Object.values(config.layers).filter(l => !l.is_overlay);
+	const overlays_arr = Object.values(config.layers).filter(l => l.is_overlay);
+
+	let layer = layers_arr.find(l => l.is_default);
+	let overlay = overlays_arr.find(l => l.is_default);
 	let sheets_selected = [];
 
 	let map = {};
@@ -43,15 +50,12 @@
 	let bearing = {};
 	let loaded = false; // Prevents map from being initiated until app is mounted
 	let panel_status = place ? "place" : null; // Control status of #content panel (options: place, layer, null)
-	let color_options = [{key: "status", label: "change since 1948"}, {key: "group", label: "population group"}];
 	let color_by = color_options[0];
 	let year = 1947;
-	let year_min_max = [1881, (new Date()).getFullYear()];
-	let statuses_arr = Object.keys(config.statuses).map(key => ({key, ...config.statuses[key]}));
 	let statuses_active = [...statuses_arr];
-	let groups_arr = Object.keys(config.groups).map(key => ({key, ...config.groups[key]}));;
 	let groups_active = [...groups_arr];
 	let location = place ? {lng: place.geometry.coordinates[0], lat: place.geometry.coordinates[1], zoom: 14} : {lng: 34.4660, lat: 31.5019, zoom: 13.5};
+
 	let toggles = {
 		info: true,	
 		places: true,
@@ -86,7 +90,7 @@
 	}
 
 	function filterSheets(sheets, layer, include = true) {
-		let layers = layer == 15 ? [6,8,9] : [layer];
+		let layers = layer == "comb1940" ? ["pal250k1946", "pal100k1950", "pal20k1940"] : [layer];
 		return include ? sheets.filter(s => layers.includes(s.layer)) : sheets.filter(s => !layers.includes(s.layer));
 	}
 
@@ -130,8 +134,8 @@
 			params.get("color"),
 			params.get("toggles")
 		];
-		if (p[0]) layer = config.layers.find(l => l.id === p[0] || +l.id_old === +p[0]);
-		if (p[1]) overlay = config.overlays.find(o => o.id === p[1]);
+		if (p[0]) layer = layers_arr.find(l => l.id === p[0] || +l.id_old === +p[0]);
+		if (p[1]) overlay = overlays_arr.find(o => o.id === p[1]);
 		if (p[2]) color_by = color_options.find(c => c.key === p[2]);
 		if (p[3]) {
 			let togs = p[3].split("|");
@@ -156,7 +160,7 @@
 <svelte:head>
 	<title>{place ? place.properties[`name_${$lang}`] : 'Historical map viewer'} - {$t('Palestine Open Maps')}</title>
   <meta property="og:title" content="{place ? place.properties[`name_${$lang}`] : 'Explore historical maps'} - {$t('Palestine Open Maps')}" />
-  <meta property="og:image" content="{base_url}/img/{place ? `og/${place.properties.slug}` : 'haifa-crop'}.jpg" />
+  <meta property="og:image" content="{cdnBase}/assets/img/{place ? `og/${place.properties.slug}` : 'haifa-crop'}.jpg" />
 	{#if $rtl}
 	<style>
 		.maplibregl-ctrl-top-right {
@@ -199,7 +203,7 @@
 			on:clear={unSelect}/>
 	{/if}
 	<Accordion label="{$t('Base maps')}">
-		{#each config.layers as l}
+		{#each layers_arr as l}
 			<label>
 				<input type="radio" name="layers" bind:group={layer} value={l} />
 				<span>{$t(l)}</span>
@@ -210,7 +214,7 @@
 	<Accordion label="{$t('Overlays')}">
 		<label><input type="checkbox" bind:checked={toggles.overlay} /><span>{$t('Show overlays')}</span></label>
 		<hr/>
-		{#each config.overlays as l}
+		{#each overlays_arr as l}
 			<label>
 				<input type="radio" disabled={!toggles.overlay} name="overlays" bind:group={overlay} value={l} /> 
 				<span>{$t(l)}</span>
@@ -252,15 +256,15 @@
 		{#if sheets_selected[0]}
 			{#if filterSheets(sheets_selected, layer.id)[0]}
 				<InfoHeader label="{$t('Sheets from this base map')}"/>
-				{#each filterSheets(sheets_selected, layer.id) as sheet}
-					<Sheet {sheet}/>
+				{#each filterSheets(sheets_selected, layer.id) as sheet (sheet.file_name)}
+					<Sheet {config} {sheet}/>
 				{/each}
 			{/if}
 			{#if filterSheets(sheets_selected, layer.id, false)[0]}
 				<hr/>
 				<InfoHeader label="{$t('Sheets from other base maps')}"/>
-				{#each filterSheets(sheets_selected, layer.id, false) as sheet}
-					<Sheet {sheet}/>
+				{#each filterSheets(sheets_selected, layer.id, false) as sheet (sheet.file_name)}
+					<Sheet {config} {sheet}/>
 				{/each}
 			{/if}
 		{:else}
@@ -295,7 +299,7 @@
 						controls={['compass', 'pitch', 'locate']}
 						options={{ maxBounds }}>
 						{#key layer}
-							<MapSource id="basemap" type="raster" url={side == 'left' ? layer.url : config.layers[0].url} maxzoom={layer.max_zoom || 14}>
+							<MapSource id="basemap" type="raster" url={side == 'left' ? layer.url : layers_arr[0].url} maxzoom={layer.max_zoom || 14}>
 								<MapLayer
 									id="basemap"
 									type="raster"
@@ -347,7 +351,7 @@
 							</MapLayer>
 						</MapSource>
 						{#if toggles.download}
-							<MapSource id="sheets" type="geojson" data={sheets} promoteId="id">
+							<MapSource id="sheets" type="geojson" data={sheets} promoteId="file_name">
 								<MapLayer
 									id="sheets-click"
 									type="fill"
@@ -360,7 +364,7 @@
 								<MapLayer
 									id="sheets"
 									type="line"
-									filter={layer.id == 15 ? ["in", "layer", 6, 8, 9] : ["==", "layer", layer.id]}
+									filter={layer.id == "comb1940" ? ["in", "layer_id", "pal250k1946", "pal100k1950", "pal20k1940"] : ["==", "layer_id", layer.id]}
 									paint={{
 										'line-color': "magenta",
 										'line-width': 1
