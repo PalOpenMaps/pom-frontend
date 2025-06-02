@@ -5,6 +5,8 @@
   import Menu from "$lib/ui/Menu.svelte";
   import VPLogo from "$lib/ui/VPLogo.svelte";
 
+  export let data;
+
   const rtl = getContext("rtl");
   const menu_active = getContext("menu_active");
 	const t = getContext("t");
@@ -16,7 +18,7 @@
   <meta property="og:image" content="{base_url}/img/haifa-crop.jpg" />
 </svelte:head>
 
-<Menu/>
+<Menu items={data.config.pages}/>
 <main class:rtl={$rtl}>
   <article>
     <slot/>

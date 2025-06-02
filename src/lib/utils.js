@@ -1,4 +1,4 @@
-import { base } from "$app/paths";
+import { cdnBase } from "./config";
 
 export async function getPlaces(url, fetch = window.fetch) {
 	const places = await(await fetch(url)).json();
@@ -11,7 +11,7 @@ export async function getPlaces(url, fetch = window.fetch) {
 }
 
 export async function getPlace(slug, fetch = window.fetch) {
-	let res = await fetch(`${base}/data/places/${slug}.json`);
+	let res = await fetch(`${cdnBase}/data/places/${slug}.json`);
 	return res ? await res.json() : null;
 }
 
@@ -31,10 +31,11 @@ export function makeFilter(statuses, groups, year) {
 	return filter;
 }
 
-export async function getLayers(url, fetch = window.fetch) {
-	let layers = await (await fetch(url)).json();
-	layers = layers.filter(l => l.is_active && !l.is_overlay);
-	return layers;
+export async function getConfig(url, fetch = window.fetch) {
+	const config = await (await fetch(url)).json();
+	config.overlays = Object.values(config.layers).filter(l => l.is_overlay);
+	config.layers = Object.values(config.layers).filter(l => !l.is_overlay);
+	return config;
 }
 
 export async function getSheets(url, layers, fetch = window.fetch) {
@@ -49,11 +50,11 @@ export async function getSheets(url, layers, fetch = window.fetch) {
 
 	for (const sheet of sheets) {
 		let props = Object.fromEntries(Object.entries(sheet).filter(([key]) => key != "boundaries"));
-		let layer = layers.find(l => l.id == sheet.layer);
-		props.year = props.year ? props.year.split("-")[0] : layer.start_year.split("-")[0];
+		let layer = layers.find(l => l.name_en == sheet.layer);
+		// props.year = props.year ? props.year.split("-")[0] : layer.start_year.split("-")[0];
 
 		geojson.features.push({
-			properties: {...props, scale: layer.scale, author: layer.attribution.split(",")[0]},
+			properties: {...props, scale: layer.scale, author: layer.author.join(", ")},
 			geometry: sheet.boundaries
 		});
 	}
@@ -61,11 +62,10 @@ export async function getSheets(url, layers, fetch = window.fetch) {
 }
 
 export function i18n(key, texts, lang) {
-	if (lang != "en" && texts[lang] && texts[lang][key]) {
-		return texts[lang][key];
-	} else {
-		return key;
+	if (typeof key === "object") {
+		return key[`name_${lang}`] || key[`${lang}`] || key.name;
 	}
+	return texts?.[key]?.[lang] || key;
 }
 
 export function makeDataset(place) {

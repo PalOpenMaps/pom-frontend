@@ -1,16 +1,10 @@
-// export const prerender = true;
-
 import { error } from '@sveltejs/kit';
-import { base } from "$app/paths";
-import { pages } from "$lib/config";
-import { parse } from "marked";
-import texts from "$lib/texts";
-import { i18n } from "$lib/utils";
+import { cdnBase } from '$lib/config';
 
-export async function load({ fetch, params }) {
-  // const config = { method: 'get', headers: { origin: 'http://localhost:5173' } };
-
-  const page = pages.find(p => p.key === params.page);
+export async function load({ parent, fetch, params }) {
+  const stuff = await parent();
+  
+  const page = Object.values(stuff.config.pages).find(p => p.href === params.page);
   if (!page) {
 		throw error(404, {
 			message: 'Not found'
@@ -18,13 +12,9 @@ export async function load({ fetch, params }) {
 	}
 
   const lang = params.lang;
-  const t = (key) => i18n(key, texts, lang);
-  const md = await (await fetch(`${base}/data/pages/${page.key}-${lang}.md`)).text();
-  const html = parse(md.replaceAll("![](/img/", `![](${base}/img/`));
+  const url = `${cdnBase}/data/pages/${params.page}_${lang}.json`;
+  const data = await (await fetch(url)).json();
+  data.content = data.content.replaceAll("%7Bassets%7D", `${cdnBase}/assets`);
 
-  return {
-    title: t(page.label),
-    content: html,
-    description: t(page.description)
-  };
+  return data;
 }
