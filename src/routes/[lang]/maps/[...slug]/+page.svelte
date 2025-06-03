@@ -38,6 +38,9 @@
 	const groups_arr = Object.keys(config.groups).map(key => ({key, ...config.groups[key]}));
 	const layers_arr = Object.values(config.layers).filter(l => !l.is_overlay);
 	const overlays_arr = Object.values(config.layers).filter(l => l.is_overlay);
+	const combined_layers = ["comb1940", "pal250k1946", "pal100k1950", "pal20k1940"]
+		.map(id => layers_arr.find(l => l.id === id))
+		.map(l => l.name_en);
 
 	let layer = layers_arr.find(l => l.is_default);
 	let overlay = overlays_arr.find(l => l.is_default);
@@ -90,7 +93,7 @@
 	}
 
 	function filterSheets(sheets, layer, include = true) {
-		let layers = layer == "comb1940" ? ["pal250k1946", "pal100k1950", "pal20k1940"] : [layer];
+		let layers = layer === combined_layers[0] ? combined_layers.slice(1) : [layer];
 		return include ? sheets.filter(s => layers.includes(s.layer)) : sheets.filter(s => !layers.includes(s.layer));
 	}
 
@@ -254,16 +257,16 @@
 	</Accordion>
 	<Accordion label="{$t('Download maps')}" bind:open={toggles.download}>
 		{#if sheets_selected[0]}
-			{#if filterSheets(sheets_selected, layer.id)[0]}
+			{#if filterSheets(sheets_selected, layer.name_en)[0]}
 				<InfoHeader label="{$t('Sheets from this base map')}"/>
-				{#each filterSheets(sheets_selected, layer.id) as sheet (sheet.file_name)}
+				{#each filterSheets(sheets_selected, layer.name_en) as sheet (sheet.file_name)}
 					<Sheet {config} {sheet}/>
 				{/each}
 			{/if}
-			{#if filterSheets(sheets_selected, layer.id, false)[0]}
+			{#if filterSheets(sheets_selected, layer.name_en, false)[0]}
 				<hr/>
 				<InfoHeader label="{$t('Sheets from other base maps')}"/>
-				{#each filterSheets(sheets_selected, layer.id, false) as sheet (sheet.file_name)}
+				{#each filterSheets(sheets_selected, layer.name_en, false) as sheet (sheet.file_name)}
 					<Sheet {config} {sheet}/>
 				{/each}
 			{/if}
@@ -364,7 +367,7 @@
 								<MapLayer
 									id="sheets"
 									type="line"
-									filter={layer.id == "comb1940" ? ["in", "layer_id", "pal250k1946", "pal100k1950", "pal20k1940"] : ["==", "layer_id", layer.id]}
+									filter={layer.name_en === combined_layers[0] ? ["in", "layer", ...combined_layers.slice(1)] : ["==", "layer", layer.name_en]}
 									paint={{
 										'line-color': "magenta",
 										'line-width': 1

@@ -26,7 +26,6 @@
     "@sveltejs/adapter-node": "^1.2.3",
     "@sveltejs/adapter-static": "^2.0.1",
     "@sveltejs/kit": "^1.14.0",
-    "@turf/bbox-polygon": "^7.2.0",
     "@turf/boolean-point-in-polygon": "^6.5.0",
     "cookie": "^0.4.1",
     "d3-dsv": "^3.0.1",

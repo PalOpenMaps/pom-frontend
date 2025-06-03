@@ -1,4 +1,3 @@
-import bboxPolygon from "@turf/bbox-polygon";
 import { cdnBase } from "./config";
 
 export async function getPlaces(url, fetch = window.fetch) {
@@ -38,24 +37,8 @@ export async function getConfig(url, fetch = window.fetch) {
 }
 
 export async function getSheets(url, config, fetch = window.fetch) {
-	let res = await fetch(url);
-	let sheets = await res.json();
-	sheets.sort((a, b) => a.layer - b.layer);
-
-	let geojson = {
-		type: "FeatureCollection",
-		features: [],
-	};
-
-	for (const sheet of sheets) {
-		const props = Object.fromEntries(Object.entries(sheet).filter(([key]) => key !== "bbox"));
-		const layer = config.layers[sheet.layer];
-
-		geojson.features.push(bboxPolygon(sheet.bbox, {
-			properties: {...props, layer_id: layer.id}
-		}));
-	}
-	return geojson;
+	let sheets = await (await fetch(url)).json();
+	return sheets;
 }
 
 export function i18n(key, texts, lang) {
