@@ -10,19 +10,21 @@
 
   export let data;
 
-  let lang = writable();
+  setContext("data_url", data.data_url);
+
+  const lang = writable();
   $: lang.set($page.params.lang ? $page.params.lang : "en");
   setContext("lang", lang);
 
-  let rtl = writable();
+  const rtl = writable();
   $: rtl.set($lang === "ar");
   setContext("rtl", rtl);
 
-  let t = writable();
+  const t = writable();
   $: t.set((key) => i18n(key, data.config.translations, $lang));
   setContext("t", t);
 
-  let menu_active = writable(false);
+  const menu_active = writable(false);
   setContext("menu_active", menu_active);
 </script>
 

@@ -1,4 +1,10 @@
-import { cdnBase } from "./config";
+import { data_static_url, data_cdn_url, data_commits_url } from "./config";
+
+export async function getDataUrl(dev, fetch = window.fetch) {
+	if (dev) return data_static_url;
+	const commits = await (await fetch(data_commits_url)).json();
+	return `${data_cdn_url}@${commits[0].sha}`;
+}
 
 export async function getPlaces(url, fetch = window.fetch) {
 	const places = await(await fetch(url)).json();
@@ -10,8 +16,8 @@ export async function getPlaces(url, fetch = window.fetch) {
 	return places;
 }
 
-export async function getPlace(slug, fetch = window.fetch) {
-	let res = await fetch(`${cdnBase}/data/places/${slug}.json`);
+export async function getPlace(data_url, slug, fetch = window.fetch) {
+	let res = await fetch(`${data_url}/data/places/${slug}.json`);
 	return res ? await res.json() : null;
 }
 

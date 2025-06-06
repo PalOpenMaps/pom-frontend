@@ -8,7 +8,7 @@
 	import { afterNavigate, goto } from "$app/navigation";
 	import mapStyle from "$lib/style.json";
 	import { makeDataset, makeColors, makeFilter } from "$lib/utils";
-	import { maxBounds, cdnBase } from "$lib/config";
+	import { maxBounds } from "$lib/config";
 	import { Map, MapSource, MapLayer, MapTooltip } from "@onsvisual/svelte-maps";
 
 	import MapCompare from "$lib/map/MapCompare.svelte";
@@ -27,6 +27,7 @@
 	let { config, sheets, places, place } = data;
 	$: ({ config, sheets, places, place } = data);
 
+	const data_url = getContext("data_url");
 	const lang = getContext("lang");
 	const rtl = getContext("rtl");
 	const t = getContext("t");
@@ -163,7 +164,7 @@
 <svelte:head>
 	<title>{place ? place.properties[`name_${$lang}`] : 'Historical map viewer'} - {$t('Palestine Open Maps')}</title>
   <meta property="og:title" content="{place ? place.properties[`name_${$lang}`] : 'Explore historical maps'} - {$t('Palestine Open Maps')}" />
-  <meta property="og:image" content="{cdnBase}/assets/img/{place ? `og/${place.properties.slug}` : 'haifa-crop'}.jpg" />
+  <meta property="og:image" content="{data_url}/assets/img/{place ? `og/${place.properties.slug}` : 'haifa-crop'}.jpg" />
 	{#if $rtl}
 	<style>
 		.maplibregl-ctrl-top-right {

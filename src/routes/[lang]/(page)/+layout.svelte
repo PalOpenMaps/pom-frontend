@@ -1,12 +1,12 @@
 <script>
   import { getContext } from "svelte";
   import { afterNavigate } from "$app/navigation";
-  import { cdnBase } from "$lib/config";
   import Menu from "$lib/ui/Menu.svelte";
   import VPLogo from "$lib/ui/VPLogo.svelte";
 
   export let data;
 
+  const data_url = getContext("data_url");
   const rtl = getContext("rtl");
   const menu_active = getContext("menu_active");
 	const t = getContext("t");
@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-  <meta property="og:image" content="{cdnBase}/assets/img/haifa-crop.jpg" />
+  <meta property="og:image" content="{data_url}/assets/img/haifa-crop.jpg" />
 </svelte:head>
 
 <Menu items={data.config.pages}/>

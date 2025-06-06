@@ -1,11 +1,11 @@
 <script>
   import { getContext } from "svelte";
-  import { cdnBase } from "$lib/config";
   import Icon from "./Icon.svelte";
 
   export let sheet;
   export let config;
 
+  const data_url = getContext("data_url");
 	const t = getContext("t");
   const layer = config.layers[sheet.layer];
   const author = layer.author.map(a => config.authors[a]);
@@ -14,7 +14,7 @@
 <div class="sheet">
   <div>
     <a href="{sheet.dropbox_link}">
-      <img src="{cdnBase}/assets/img/thumb/{layer.id}/{sheet.file_name}" alt="{sheet.name}">
+      <img src="{data_url}/assets/img/thumb/{layer.id}/{sheet.file_name}" alt="{sheet.name}">
     </a>
   </div>
   <div class="sheet-info">

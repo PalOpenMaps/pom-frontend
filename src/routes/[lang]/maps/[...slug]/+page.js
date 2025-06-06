@@ -9,7 +9,7 @@ export async function load({ params, parent, fetch }) {
 	let places = stuff.places; // places is loaded once in __layout.svelte and passed to this route
 	let place;
 	if (slug && places.features.find(f => f.properties.slug == slug)) {
-		place = await getPlace(slug, fetch);
+		place = await getPlace(parent.data_url, slug, fetch);
 	} else {
 		place = null;
 	}

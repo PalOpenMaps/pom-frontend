@@ -1,5 +1,4 @@
 import { error } from '@sveltejs/kit';
-import { cdnBase } from '$lib/config';
 
 export async function load({ parent, fetch, params }) {
   const stuff = await parent();
@@ -12,9 +11,9 @@ export async function load({ parent, fetch, params }) {
 	}
 
   const lang = params.lang;
-  const url = `${cdnBase}/data/pages/${params.page}_${lang}.json`;
+  const url = `${stuff.data_url}/data/pages/${params.page}_${lang}.json`;
   const data = await (await fetch(url)).json();
-  data.content = data.content.replaceAll("%7Bassets%7D", `${cdnBase}/assets`);
+  data.content = data.content.replaceAll("%7Bassets%7D", `${stuff.data_url}/assets`);
 
   return data;
 }

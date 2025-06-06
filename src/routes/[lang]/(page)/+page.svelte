@@ -2,7 +2,6 @@
   import { getContext } from "svelte";
 	import { goto } from "$app/navigation";
 	import { base } from "$app/paths";
-	import { cdnBase } from "$lib/config";
   import Select from "$lib/ui/Select.svelte";
   import Tile from "$lib/ui/Tile.svelte";
   import Icon from "$lib/ui/Icon.svelte";
@@ -11,6 +10,7 @@
   let  { places } = data;
   $: ({ places } = data);
 
+  const data_url = getContext("data_url");
   const lang = getContext("lang");
   const rtl = getContext("rtl");
   const t = getContext("t");
@@ -24,7 +24,7 @@
 <svelte:head>
   <title>{$t('Palestine Open Maps')}</title>
   <meta property="og:title" content="{$t('Palestine Open Maps')}" />
-  <meta property="og:image" content="{cdnBase}/assets/img/haifa-crop.jpg" />
+  <meta property="og:image" content="{data_url}/assets/img/haifa-crop.jpg" />
 </svelte:head>
 
 <h1>{@html $t('Welcome to<br>Palestine Open Maps')}</h1>
@@ -53,6 +53,8 @@
 
 <style>
   .grid {
+    width: 800px !important;
+    max-width: calc(100vw - 24px);
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
     grid-gap: 20px;
@@ -97,6 +99,8 @@
     margin: 20px 0 35px 0;
   }
   .buttons {
+    width: 800px !important;
+    max-width: calc(100vw - 24px);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap-reverse;
