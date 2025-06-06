@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/pom-frontend/favicon.ico" />
+		<link rel="shortcut icon" href="/pom-frontend/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+		<link rel="modulepreload" href="/pom-frontend/_app/immutable/entry/start.6a9c0eca.js">
+		<link rel="modulepreload" href="/pom-frontend/_app/immutable/chunks/index.bf16622f.js">
+		<link rel="modulepreload" href="/pom-frontend/_app/immutable/chunks/singletons.308e994c.js">
+		<link rel="modulepreload" href="/pom-frontend/_app/immutable/chunks/paths.55646f1d.js">
+		<link rel="modulepreload" href="/pom-frontend/_app/immutable/chunks/control.c2cf8273.js">
+		<link rel="modulepreload" href="/pom-frontend/_app/immutable/entry/app.c8b979d1.js">
+	</head>
+	<body>
+		<div>
+			<script>
+				{
+					__sveltekit_y5gmzi = {
+						assets: "/pom-frontend",
+						base: "/pom-frontend",
+						env: {}
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("/pom-frontend/_app/immutable/entry/start.6a9c0eca.js"),
+						import("/pom-frontend/_app/immutable/entry/app.c8b979d1.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element);
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
