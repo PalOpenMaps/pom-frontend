@@ -43,12 +43,12 @@
 </div>
 
 <div class="grid">
-  <Tile image="{base}/img/tile-map1870.jpg">{$t('Explore historical maps from the 1870s onwards')}</Tile>
-  <Tile image="{base}/img/tile-places.jpg">{$t('View data on over 2,000 places, past and present')}</Tile>
-  <Tile image="{base}/img/tile-map1946.jpg">{$t('Download hundreds of historical map sheets')}</Tile>
-  <Tile image="{base}/img/tile-splitscreen.jpg">{$t('View past and present maps side-by-side')}</Tile>
-  <Tile image="{base}/img/tile-map3d.jpg">{$t('View the topography of Palestine in 3D')}</Tile>
-  <Tile image="{base}/img/tile-overlay.jpg">{$t('Overlay historical and present day maps')}</Tile>
+  <Tile image="{base}/assets/img/tile-map1870.jpg">{$t('Explore historical maps from the 1870s onwards')}</Tile>
+  <Tile image="{base}/assets/img/tile-places.jpg">{$t('View data on over 2,000 places, past and present')}</Tile>
+  <Tile image="{base}/assets/img/tile-map1946.jpg">{$t('Download hundreds of historical map sheets')}</Tile>
+  <Tile image="{base}/assets/img/tile-splitscreen.jpg">{$t('View past and present maps side-by-side')}</Tile>
+  <Tile image="{base}/assets/img/tile-map3d.jpg">{$t('View the topography of Palestine in 3D')}</Tile>
+  <Tile image="{base}/assets/img/tile-overlay.jpg">{$t('Overlay historical and present day maps')}</Tile>
 </div>
 
 <style>
