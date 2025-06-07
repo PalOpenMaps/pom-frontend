@@ -15,5 +15,5 @@
 
 <h1>{data.title}</h1>
 {#if data.content}
-{@html data.content}
+  {@html data.content}
 {/if}

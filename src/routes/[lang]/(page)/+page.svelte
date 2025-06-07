@@ -52,14 +52,24 @@
 </div>
 
 <style>
-  .grid {
-    width: 800px !important;
+  .grid, .buttons {
+    width: 800px;
     max-width: calc(100vw - 24px);
+  }
+  .grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
     grid-gap: 20px;
-		margin: 50px 0 0 0;
+		margin: 50px 0 0;
 	}
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+  }
+  .buttons > * {
+    display: inline-block;
+  }
   .btn {
     background-color: white;
     color: #333;
@@ -97,16 +107,6 @@
   p.text-big {
     font-size: 1.4em;
     margin: 20px 0 35px 0;
-  }
-  .buttons {
-    width: 800px !important;
-    max-width: calc(100vw - 24px);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap-reverse;
-  }
-  .buttons > * {
-    display: inline-block;
   }
   .select {
     margin-top: 3px;

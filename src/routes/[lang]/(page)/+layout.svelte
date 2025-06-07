@@ -32,17 +32,15 @@
   main {
     width: 640px;
     max-width: calc(100% - 24px);
-    margin: 70px auto 0 64px;
-  }
-  main.rtl {
-    margin: 70px 64px 0 auto !important;
+    margin-top: 70px;
+    margin-bottom: 0;
+    margin-inline-start: 64px;
+    margin-inline-end: auto;
   }
   @media (max-width: 716px) {
     main {
-      margin: 70px 12px 0 auto;
-    }
-    main.rtl {
-      margin: 70px auto 0 12px !important;
+      margin-inline-start: auto !important;
+      margin-inline-end: 12px !important;
     }
   }
   footer {

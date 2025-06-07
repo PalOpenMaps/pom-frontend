@@ -14,7 +14,7 @@
     display: inline-flex;
     flex-direction: column;
     justify-content: flex-end;
-    height: 240px;
+    height: 250px;
     background-color: #ddd;
     background-repeat: no-repeat;
     background-position: center;
