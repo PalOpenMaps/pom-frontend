@@ -22,7 +22,7 @@
   "devDependencies": {
     "@fontsource/fira-mono": "^4.5.0",
     "@lukeed/uuid": "^2.0.0",
-    "@onsvisual/svelte-maps": "^1.1.1",
+    "@onsvisual/svelte-maps": "^1.2.26",
     "@sveltejs/adapter-node": "^1.2.3",
     "@sveltejs/adapter-static": "^2.0.1",
     "@sveltejs/kit": "^1.14.0",

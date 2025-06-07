@@ -159,6 +159,7 @@
 	}
 
 	$: if (loaded) updateQuery(layer, overlay, color_by, toggles);
+	$: if (!toggles.split) map["right"] = null;
 </script>
 
 <svelte:head>
@@ -286,7 +287,7 @@
 		{#if loaded}
 			<MapCompare mapLeft={map['left']} mapRight={map['right']}>
 				{#each ['left', 'right'] as side}
-					{#if side == 'left' || (side == 'right' && toggles.split)}
+					{#if side === 'left' || (side === 'right' && toggles.split)}
 					<Map
 						id="map-{side}"
 						bind:map={map[side]}
