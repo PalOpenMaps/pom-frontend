@@ -1,4 +1,10 @@
-import { base } from "$app/paths";
+import { data_static_url, data_cdn_url, data_commits_url } from "./config";
+
+export async function getDataUrl(dev, fetch = window.fetch) {
+	if (dev) return data_static_url;
+	const commits = await (await fetch(data_commits_url)).json();
+	return `${data_cdn_url}@${commits[0].sha}`;
+}
 
 export async function getPlaces(url, fetch = window.fetch) {
 	const places = await(await fetch(url)).json();
@@ -10,8 +16,8 @@ export async function getPlaces(url, fetch = window.fetch) {
 	return places;
 }
 
-export async function getPlace(slug, fetch = window.fetch) {
-	let res = await fetch(`${base}/data/places/${slug}.json`);
+export async function getPlace(data_url, slug, fetch = window.fetch) {
+	let res = await fetch(`${data_url}/data/places/${slug}.json`);
 	return res ? await res.json() : null;
 }
 
@@ -31,41 +37,21 @@ export function makeFilter(statuses, groups, year) {
 	return filter;
 }
 
-export async function getLayers(url, fetch = window.fetch) {
-	let layers = await (await fetch(url)).json();
-	layers = layers.filter(l => l.is_active && !l.is_overlay);
-	return layers;
+export async function getConfig(url, fetch = window.fetch) {
+	const config = await (await fetch(url)).json();
+	return config;
 }
 
-export async function getSheets(url, layers, fetch = window.fetch) {
-	let res = await fetch(url);
-	let sheets = await res.json();
-	sheets.sort((a, b) => a.layer - b.layer);
-
-	let geojson = {
-		type: "FeatureCollection",
-		features: [],
-	};
-
-	for (const sheet of sheets) {
-		let props = Object.fromEntries(Object.entries(sheet).filter(([key]) => key != "boundaries"));
-		let layer = layers.find(l => l.id == sheet.layer);
-		props.year = props.year ? props.year.split("-")[0] : layer.start_year.split("-")[0];
-
-		geojson.features.push({
-			properties: {...props, scale: layer.scale, author: layer.attribution.split(",")[0]},
-			geometry: sheet.boundaries
-		});
-	}
-	return geojson;
+export async function getSheets(url, config, fetch = window.fetch) {
+	let sheets = await (await fetch(url)).json();
+	return sheets;
 }
 
 export function i18n(key, texts, lang) {
-	if (lang != "en" && texts[lang] && texts[lang][key]) {
-		return texts[lang][key];
-	} else {
-		return key;
+	if (typeof key === "object") {
+		return key[`name_${lang}`] || key[`${lang}`] || key.name || key.name_en;
 	}
+	return texts?.[key]?.[lang] || key;
 }
 
 export function makeDataset(place) {

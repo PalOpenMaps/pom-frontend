@@ -1,7 +1,6 @@
 <script>
-  import { groups } from "$lib/config";
-
   export let data;
+  export let groups;
   export let t = text => text;
 
   const isNull = (val) => val == null ? 0 : val;

@@ -2,9 +2,10 @@
   import { getContext } from "svelte";
   import { base } from "$app/paths";
 	import { page } from "$app/stores";
-	import { pages } from "$lib/config";
   import Links from "./Links.svelte";
   import Icon from "./Icon.svelte";
+
+	export let items;
 
   const lang = getContext("lang");
 	const rtl = getContext("rtl");
@@ -15,21 +16,11 @@
 <nav id="menu" class:shadow={$menu_active} style:left={$rtl ? 'auto' : $menu_active ? '0' : '-320px'} style:right={!rtl ? 'auto' : $menu_active ? '0' : '-320px'}>
 	<slot/>
 	<Links>
-		<a href="{base}/{$lang}/" class:active={$page.url.pathname == `${base}/${$lang}/`}><Icon type="home"/><span>{$t('Home')}</span></a>
-		<a href="{base}/{$lang}/maps/" class:active={$page.url.pathname.includes('maps')}><Icon type="map"/><span>{$t('Explore maps')}</span></a>
-		{#each pages as pg}
-			<a href="{base}/{$lang}/{pg.key}/" class:active={$page.url.pathname == `${base}/${$lang}/${pg.key}/`}><Icon type="{pg.icon}"/><span>{$t(pg.label)}</span></a>
+		{#each Object.values(items) as item}
+			{@const href = item?.href?.slice(0, 6) === "https:" ? item.href : item.href ? `${base}/${$lang}/${item.href}` : `${base}/${$lang}`}
+			<a {href} class:active={$page.url.pathname === href}><Icon type="{item.icon}"/><span>{$t(item)}</span></a>
 		{/each}
-		<a href="https://medium.com/palopenmaps"><Icon type="pen"/><span>{$t('Blog')}</span></a>
-		<a href="https://visualizingpalestine.org/vp-contacts#about"><Icon type="email"/><span>{$t('Contact')}</span></a>
 	</Links>
-	<!-- <Links>
-		{#if $rtl}
-		<a href="{String($page.url).replace('ar', 'en')}"><Icon type="globe"/><span>English</span></a>
-		{:else}
-		<a href="{String($page.url).replace('en', 'ar')}"><Icon type="globe"/><span>عربي</span></a>
-		{/if}
-	</Links> -->
 </nav>
 
 <style>

@@ -1,5 +1,3 @@
-const prerender = false;
-
 import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 

@@ -1,12 +1,12 @@
-// export const prerender = true;
-
-import { locs_url, layers_url, sheets_url } from "$lib/config";
-import { getPlaces, getLayers, getSheets } from "$lib/utils";
+import { dev } from '$app/environment';
+import { locs_path, config_path, sheets_path } from "$lib/config";
+import { getDataUrl, getPlaces, getConfig, getSheets } from "$lib/utils";
 
 export async function load({ fetch }) {
-	let places = await getPlaces(locs_url, fetch);
-	let layers = await getLayers(layers_url, fetch);
-	let sheets = await getSheets(sheets_url, layers, fetch);
+	let data_url = await getDataUrl(dev, fetch);
+	let places = await getPlaces(`${data_url}/${locs_path}`, fetch);
+	let config = await getConfig(`${data_url}/${config_path}`, fetch);
+	let sheets = await getSheets(`${data_url}/${sheets_path}`, config, fetch);
 
-	return { places, layers, sheets };
+	return { places, config, sheets, data_url };
 }

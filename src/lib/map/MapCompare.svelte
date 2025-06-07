@@ -1,4 +1,5 @@
 <script>
+	import { browser } from '$app/environment';
 	import Compare from '$lib/vendor/compare';
 	
 	export let mapLeft;
@@ -6,18 +7,17 @@
 	
 	let mapCompare;
 	let mapsContainer;
-	let mapsLoaded = false;
-	
-	$: if (!mapsLoaded && window && mapsContainer && mapLeft && mapRight) {
+
+	function addCompare() {
 		mapCompare = new Compare(mapLeft, mapRight, mapsContainer, {});
-		mapsLoaded = true;
 	}
-	
-	$: if (mapsLoaded && (!mapLeft || !mapRight)) {
+	$: if (browser && mapsContainer && mapLeft && mapRight && !mapCompare) addCompare();
+
+	function removeCompare() {
 		mapCompare.remove();
 		mapCompare = null;
-		mapsLoaded = false;
 	}
+	$: if (mapCompare && (!mapLeft || !mapRight)) removeCompare();
 </script>
 
 <svelte:head>

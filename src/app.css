@@ -106,9 +106,9 @@ button:focus:not(:focus-visible) {
 }
 
 article img {
-	width: 800px !important;
+	width: 800px;
 	max-width: calc(100vw - 24px);
-	height: auto !important;
+	height: auto;
 }
 
 h4 {

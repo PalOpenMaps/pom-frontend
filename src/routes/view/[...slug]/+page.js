@@ -1,25 +1,20 @@
+export const prerender = false;
+
 import { redirect } from '@sveltejs/kit';
-const prerender = false;
-
 import { base } from '$app/paths';
-import { csvParse, autoType } from "d3-dsv";
-import { redirect_url } from '$lib/config';
+import { redirect_path } from '$lib/config';
 
-export async function load({ fetch, params }) {
-  // const config = { method: 'get', headers: { origin: 'http://localhost:5173' } };
+export async function load({ fetch, params, parent }) {
+  const stuff = await parent();
+  const lookup = await (await fetch(`${stuff.data_url}/${redirect_path}`)).json();
 
-  let res = await fetch(redirect_url);
-  // let res = await fetch(new Request(redirect_url, config));
-  let str = await res.text();
-  let arr = csvParse(str, autoType);
+  const par = params.slug.replace("/@", "|").replace("/","").split("|");
+	const id = par[0];
+	const coords = par[1] ? par[1].split(",") : null;
+  const place = lookup[id];
 
-  let par = params.slug.replace("/@", "|").replace("/","").split("|");
-	let id = par[0];
-	let coords = par[1] ? par[1].split(",") : null;
-  let place = arr.find(p => +p.id_old == +id);
-
-  let slug = place ? `${place.slug}/` : "";
-  let hash = coords ? `#13.00,${coords[1]},${coords[0]}` : "";
+  const slug = place ? `${place.slug}/` : "";
+  const hash = coords ? `#13.00,${coords[1]},${coords[0]}` : "";
 
   throw redirect(301, `${base}/en/maps/${slug}${hash}`);
 }

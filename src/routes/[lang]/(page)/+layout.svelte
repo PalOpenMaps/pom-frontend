@@ -1,10 +1,12 @@
 <script>
   import { getContext } from "svelte";
   import { afterNavigate } from "$app/navigation";
-  import { base_url } from "$lib/config";
   import Menu from "$lib/ui/Menu.svelte";
   import VPLogo from "$lib/ui/VPLogo.svelte";
 
+  export let data;
+
+  const data_url = getContext("data_url");
   const rtl = getContext("rtl");
   const menu_active = getContext("menu_active");
 	const t = getContext("t");
@@ -13,10 +15,10 @@
 </script>
 
 <svelte:head>
-  <meta property="og:image" content="{base_url}/img/haifa-crop.jpg" />
+  <meta property="og:image" content="{data_url}/assets/img/haifa-crop.jpg" />
 </svelte:head>
 
-<Menu/>
+<Menu items={data.config.pages}/>
 <main class:rtl={$rtl}>
   <article>
     <slot/>
@@ -30,17 +32,15 @@
   main {
     width: 640px;
     max-width: calc(100% - 24px);
-    margin: 70px auto 0 64px;
-  }
-  main.rtl {
-    margin: 70px 64px 0 auto !important;
+    margin-top: 70px;
+    margin-bottom: 0;
+    margin-inline-start: 64px;
+    margin-inline-end: auto;
   }
   @media (max-width: 716px) {
     main {
-      margin: 70px 12px 0 auto;
-    }
-    main.rtl {
-      margin: 70px auto 0 12px !important;
+      margin-inline-start: auto !important;
+      margin-inline-end: 12px !important;
     }
   }
   footer {
