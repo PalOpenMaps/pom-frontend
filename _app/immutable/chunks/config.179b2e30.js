@@ -1,1 +1,0 @@
-const a="https://palopenmaps.org",s="https://palopenmaps.github.io/pom-data",t="https://cdn.jsdelivr.net/gh/palopenmaps/pom-data",o="https://api.github.com/repos/palopenmaps/pom-data/commits?per_page=1",p="data/places.json",n="data/redirects.json",c="data/config.json",e="data/sheets.json",d=[[30.5,29],[39.4,33.9]];export{o as a,a as b,c,s as d,t as e,p as l,d as m,n as r,e as s};
