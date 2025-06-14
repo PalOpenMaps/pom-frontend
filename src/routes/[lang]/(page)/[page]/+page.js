@@ -5,9 +5,9 @@ export async function load({ parent, fetch, params }) {
   
   const page = Object.values(stuff.config.pages).find(p => p.href === params.page);
   if (!page) {
-		throw error(404, {
-			message: 'Not found'
-		});
+		error(404, {
+      			message: 'Not found'
+      		});
 	}
 
   const lang = params.lang;

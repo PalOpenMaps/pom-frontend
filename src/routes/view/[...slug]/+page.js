@@ -16,5 +16,5 @@ export async function load({ fetch, params, parent }) {
   const slug = place ? `${place.slug}/` : "";
   const hash = coords ? `#13.00,${coords[1]},${coords[0]}` : "";
 
-  throw redirect(301, `${base}/en/maps/${slug}${hash}`);
+  redirect(301, `${base}/en/maps/${slug}${hash}`);
 }
