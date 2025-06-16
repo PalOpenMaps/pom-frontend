@@ -1,6 +1,6 @@
 export const base_url = "https://palopenmaps.org";
 export const data_static_url = "https://palopenmaps.github.io/pom-data";
-export const data_cdn_url = "https://cdn.jsdelivr.net/gh/palopenmaps/pom-data";
+export const data_cdn_url = "https://pom-data.pages.dev/";
 export const data_commits_url = "https://api.github.com/repos/palopenmaps/pom-data/commits?per_page=1";
 
 export const locs_path = "data/places.json";
