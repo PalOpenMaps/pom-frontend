@@ -1,0 +1,67 @@
+import { json, error } from "@sveltejs/kit";
+import { BASEROW_API_KEY } from '$env/static/private';
+import cache from "../cache.js";
+import { parseProp, parseNumericProp } from "$lib/api/utils.js";
+
+const tableCodes = {
+  sources: 707, authors: 708, groups: 709, statuses: 710,
+  pages: 705, translations: 706, layers: 711
+}
+const tables = Object.entries(tableCodes)
+  .map(t => ({key: t[0], url: `https://base.palopenmaps.org/api/database/rows/table/${t[1]}/?user_field_names=true`}));
+const skipProps = ["id", "order"];
+const numericProps = ["x_min", "x_max", "y_min", "y_max"];
+const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
+const expiry = 4 * 60 * 60; // 4 hour cache expiry
+
+// Filter and format Baserow response
+function formatConfig(data, key) {
+  const props = Object.keys(data[0])
+    .filter(prop => !skipProps.includes(prop));
+  
+  // Translations are stored in a lookup
+  if (key === "translations") {
+    const lookup = {};
+    for (const d of data) {
+      const obj = {};
+      for (const prop of props) obj[prop] = d[prop];
+      lookup[d.en] = obj;
+    }
+    return lookup;
+  }
+
+  // Other config items are arrays
+  return data.map(d => {
+    const obj = {};
+    for (const prop of props) {
+      obj[prop] = numericProps.includes(prop) ? parseNumericProp(d[prop]) : parseProp(d[prop]);
+    }
+    return obj;
+  });
+}
+
+export async function GET({ fetch }) {
+
+  const cachedData = cache.get("config");
+  if (cachedData) {
+    console.log("Found cached value!");
+    return json(cachedData);
+  }
+
+  try {
+    const config = {};
+
+    for (const table of tables) {
+      const response = await fetch(table.url, {headers})
+      const data = await response.json();
+      config[table.key] = formatConfig(data.results, table.key);
+    }
+    
+    cache.set('config', config, expiry);
+
+    return json(config);
+  }
+  catch {
+    error(500, "Could not fetch config.")
+  }
+}
