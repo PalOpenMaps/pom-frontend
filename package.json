@@ -23,7 +23,7 @@
   "devDependencies": {
     "@cacheable/node-cache": "^1.7.3",
     "@onsvisual/svelte-maps": "^1.2.26",
-    "@sveltejs/adapter-cloudflare": "^7.2.4",
+    "@sveltejs/adapter-netlify": "^5.2.4",
     "@sveltejs/adapter-node": "^2.0.0",
     "@sveltejs/adapter-static": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
