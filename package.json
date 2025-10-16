@@ -21,6 +21,7 @@
     "update-places": "node ./scripts/get-data.js && node ./scripts/make-places.js"
   },
   "devDependencies": {
+    "@cacheable/node-cache": "^1.7.3",
     "@onsvisual/svelte-maps": "^1.2.26",
     "@sveltejs/adapter-cloudflare": "^7.2.4",
     "@sveltejs/adapter-node": "^2.0.0",
@@ -30,7 +31,6 @@
     "d3-dsv": "^3.0.1",
     "debounce": "^1.2.1",
     "gh-pages": "^6.3.0",
-    "node-cache": "^5.1.2",
     "prettier": "^2.8.8",
     "prettier-plugin-svelte": "^2.10.1",
     "svelte": "^4.0.0",

@@ -3,7 +3,7 @@ import adapter_static from '@sveltejs/adapter-static';
 import adapter_node from '@sveltejs/adapter-node';
 import adapter_cloudflare from '@sveltejs/adapter-cloudflare';
 
-const mode = process.env.APP_ENV ? process.env.APP_ENV : process.env.NODE_ENV ? 'preview' : 'dev';
+const mode = process.env.APP_ENV ? process.env.APP_ENV : process.env.NODE_ENV === 'production' ? 'preview' : 'dev';
 const base = mode === 'preview' ? '/pom-frontend' : '';
 
 const config =
