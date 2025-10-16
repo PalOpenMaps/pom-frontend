@@ -32,7 +32,7 @@ export async function GET({ fetch }) {
           properties: {
             name_en: row.name_en,
             file_name: row.file_name,
-            layer: +row.layer[0].order.split(".")[0] - 1,
+            layer: +row.layer[0].value,
             sheet_number: row.sheet_number_ext ?
               [row.sheet_number, row.sheet_number_ext] :
               [row.sheet_number],

@@ -15,29 +15,22 @@ const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 // Filter and format Baserow response
-function formatConfig(data, key) {
+function formatConfig(data) {
   const props = Object.keys(data[0])
     .filter(prop => !skipProps.includes(prop));
-  
-  // Translations are stored in a lookup
-  if (key === "translations") {
-    const lookup = {};
-    for (const d of data) {
-      const obj = {};
-      for (const prop of props) obj[prop] = d[prop];
-      lookup[d.en] = obj;
-    }
-    return lookup;
-  }
 
-  // Other config items are arrays
-  return data.map(d => {
+  const key = props.includes("key") ? "key" : props.includes("en") ? "en" : "name_en";
+  
+  const array = [];
+  const lookup = {};
+  for (let i = 0; i < data.length; i ++) {
+    const d = data[i];
     const obj = {};
-    for (const prop of props) {
-      obj[prop] = numericProps.includes(prop) ? parseNumericProp(d[prop]) : parseProp(d[prop]);
-    }
-    return obj;
-  });
+    for (const prop of props) obj[prop] = numericProps.includes(prop) ? parseNumericProp(d[prop]) : parseProp(d[prop]);
+    array.push(obj);
+    lookup[d[key]] = i;
+  }
+  return { array, lookup };
 }
 
 export async function GET({ fetch }) {
@@ -49,12 +42,14 @@ export async function GET({ fetch }) {
   }
 
   try {
-    const config = {};
+    const config = { lookup: {} };
 
     for (const table of tables) {
       const response = await fetch(table.url, {headers})
       const data = await response.json();
-      config[table.key] = formatConfig(data.results, table.key);
+      const { array, lookup } = formatConfig(data.results);
+      config[table.key] = array;
+      config.lookup[table.key] = lookup;
     }
     
     cache.set('config', config, expiry);
