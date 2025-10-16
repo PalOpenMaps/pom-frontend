@@ -1,5 +1,5 @@
 <script>
-	import "../app.css";
+	import "../../app.css";
   import { writable } from 'svelte/store';
 	import { setContext } from "svelte";
 	import { page } from '$app/stores';
