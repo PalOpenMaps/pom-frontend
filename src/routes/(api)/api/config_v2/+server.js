@@ -10,7 +10,7 @@ const tableCodes = {
 const tables = Object.entries(tableCodes)
   .map(t => ({key: t[0], url: `https://base.palopenmaps.org/api/database/rows/table/${t[1]}/?user_field_names=true`}));
 const skipProps = ["id", "order"];
-const numericProps = ["x_min", "x_max", "y_min", "y_max", "min_zoom", "max_zoom", "scale", "start_year", "end_year"];
+const numericProps = ["x_min", "x_max", "y_min", "y_max"];
 const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
@@ -20,15 +20,17 @@ function formatConfig(data) {
     .filter(prop => !skipProps.includes(prop));
 
   const key = props.includes("key") ? "key" : props.includes("en") ? "en" : "name_en";
-
+  
+  const array = [];
   const lookup = {};
   for (let i = 0; i < data.length; i ++) {
     const d = data[i];
     const obj = {};
     for (const prop of props) obj[prop] = numericProps.includes(prop) ? parseNumericProp(d[prop]) : parseProp(d[prop]);
-    lookup[d[key]] = obj;
+    array.push(obj);
+    lookup[d[key]] = i;
   }
-  return lookup;
+  return { array, lookup };
 }
 
 export async function GET({ fetch }) {
@@ -40,13 +42,14 @@ export async function GET({ fetch }) {
   }
 
   try {
-    const config = {};
+    const config = { lookup: {} };
 
     for (const table of tables) {
       const response = await fetch(table.url, {headers})
       const data = await response.json();
-      const lookup = formatConfig(data.results);
-      config[table.key] = lookup;
+      const { array, lookup } = formatConfig(data.results);
+      config[table.key] = array;
+      config.lookup[table.key] = lookup;
     }
     
     cache.set('config', config, expiry);

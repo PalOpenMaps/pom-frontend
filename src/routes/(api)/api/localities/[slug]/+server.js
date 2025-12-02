@@ -23,14 +23,16 @@ export async function GET({ params, fetch }) {
     const data = (await response.json()).results[0];
     if (!data) error(404, "Locality not found.");
 
-    const place = {};
+    const properties = {};
     for (const prop of Object.keys(data).filter(p => !skipProps.includes(p))) {
-      place[prop] = numericProps.some(p => prop.startsWith(p)) ? parseNumericProp(data[prop]) : parseProp(data[prop]);
+      properties[prop] = numericProps.some(p => prop.startsWith(p)) ? parseNumericProp(data[prop]) : parseProp(data[prop]);
     }
+    const geometry = {type: "Point", coordinates: [properties.lng, properties.lat]};
+    const feature = {type: "Feature", properties, geometry};
     
-    cache.set(slug, place, expiry);
+    cache.set(slug, feature, expiry);
 
-    return json(place);
+    return json(feature);
   }
   catch {
     error(500, "Could not fetch locality.")

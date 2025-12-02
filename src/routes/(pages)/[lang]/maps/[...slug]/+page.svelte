@@ -40,7 +40,7 @@
 	const layers_arr = Object.values(config.layers).filter(l => !l.is_overlay);
 	const overlays_arr = Object.values(config.layers).filter(l => l.is_overlay);
 	const combined_layers = ["comb1940", "pal250k1946", "pal100k1950", "pal20k1940"]
-		.map(id => layers_arr.find(l => l.id === id))
+		.map(key => config.layers[key])
 		.map(l => l.name_en);
 
 	let layer = layers_arr.find(l => l.is_default);
@@ -138,8 +138,8 @@
 			params.get("color"),
 			params.get("toggles")
 		];
-		if (p[0]) layer = layers_arr.find(l => l.id === p[0] || +l.id_old === +p[0]);
-		if (p[1]) overlay = overlays_arr.find(o => o.id === p[1]);
+		if (p[0]) layer = layers_arr.find(l => l.key === p[0] || +l.id_old === +p[0]);
+		if (p[1]) overlay = overlays_arr.find(o => o.key === p[1]);
 		if (p[2]) color_by = color_options.find(c => c.key === p[2]);
 		if (p[3]) {
 			let togs = p[3].split("|");
@@ -150,7 +150,7 @@
 	}
 
 	function updateQuery(layer, overlay, color_by, toggles) {
-		let search = `?basemap=${layer.id}&overlay=${overlay.id}&color=${color_by.key}&toggles=${
+		let search = `?basemap=${layer.key}&overlay=${overlay.key}&color=${color_by.key}&toggles=${
 			Object.keys(toggles).filter(key => toggles[key] && !["info", "download"].includes(key)).join('|')
 		}`;
 		let loc = $page.url;
@@ -324,7 +324,7 @@
 									minzoom={l.minzoom || null}
 									maxzoom={l.maxzoom || null}
 									order={["building", "transport", "landcover", "boundary"].includes(l.metadata.group) ? "overlays-div" : null}
-									visible={toggles.overlay && overlay_groups[l.metadata.group] && (!l.metadata.unique || l.metadata.unique === overlay.id)}/>
+									visible={toggles.overlay && overlay_groups[l.metadata.group] && (!l.metadata.unique || l.metadata.unique === overlay.key)}/>
 							{/each}
 						</MapSource>
 						<MapSource id="places" type="geojson" data={places} promoteId="slug">
@@ -492,10 +492,10 @@
 						{$t('Dates')}<br/>
 						<span class="text-lrg">{@html getDates(layer)}</span>
 					</div>
-					{#if sheets.features.filter(s => s.properties.layer == layer.id).length > 0}
+					{#if sheets.features.filter(s => s.properties.layer == layer.key).length > 0}
 						<div>
 							{$t('No. of map sheets')}<br/>
-							<span class="text-lrg">{sheets.features.filter(s => s.properties.layer == layer.id).length}</span>
+							<span class="text-lrg">{sheets.features.filter(s => s.properties.layer == layer.key).length}</span>
 						</div>
 					{/if}
 				</InfoBlock>
