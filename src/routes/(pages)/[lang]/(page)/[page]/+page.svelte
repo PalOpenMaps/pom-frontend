@@ -3,17 +3,20 @@
 
   export let data;
 
-  const data_url = getContext("data_url")
+  const data_url = getContext("data_url");
+  const lang = getContext("lang");
 	const t = getContext("t");
+
+  $: console.log(data.page, $lang);
 </script>
 
 <svelte:head>
-  <title>{data.title} - {$t('Palestine Open Maps')}</title>
-  <meta property="og:title" content="{data.title} - {$t('Palestine Open Maps')}" />
+  <title>{data.page[`name_${$lang}`]} - {$t('Palestine Open Maps')}</title>
+  <meta property="og:title" content="{data.page[`name_${$lang}`]} - {$t('Palestine Open Maps')}" />
   <meta property="og:image" content="{data_url}/assets/img/haifa-crop.jpg" />
 </svelte:head>
 
-<h1>{data.title}</h1>
-{#if data.content}
-  {@html data.content}
+<h1>{data.page[`name_${$lang}`]}</h1>
+{#if data.page[`body_${$lang}`]}
+  {@html data.page[`body_${$lang}`]}
 {/if}

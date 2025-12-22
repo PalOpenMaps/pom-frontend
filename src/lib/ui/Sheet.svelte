@@ -8,13 +8,13 @@
   const data_url = getContext("data_url");
 	const t = getContext("t");
   const layer = config.layers[sheet.layer];
-  const author = layer.author.map(a => config.authors[a]);
+  const author = [layer.author].flat().map(a => config.authors[a]);
 </script>
 
 <div class="sheet">
   <div>
     <a href="{sheet.dropbox_link}">
-      <img src="{data_url}/assets/img/thumb/{layer.id}/{sheet.file_name}" alt="{sheet.name}">
+      <img src="{sheet.thumbnail}" alt="{sheet.name}">
     </a>
   </div>
   <div class="sheet-info">

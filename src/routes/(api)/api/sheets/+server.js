@@ -2,6 +2,7 @@ import { json, error } from "@sveltejs/kit";
 import { BASEROW_API_KEY } from '$env/static/private';
 import cache from "../cache.js";
 import { parseNumericProp } from "$lib/api/utils.js";
+import { parseNumericProp } from "$lib/api/utils.js";
 
 const startUrl = "https://base.palopenmaps.org/api/database/rows/table/712/?user_field_names=true&size=200";
 const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
@@ -34,6 +35,9 @@ export async function GET({ fetch }) {
             name_en: row.name_en,
             file_name: row.file_name,
             sheet_number: row.sheet_number_ext ?
+              `${row.sheet_number} & ${row.sheet_number_ext}` :
+              row.sheet_number,
+            layer: row.layer?.[0]?.value,
               `${row.sheet_number} & ${row.sheet_number_ext}` :
               row.sheet_number,
             layer: row.layer?.[0]?.value,

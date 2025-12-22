@@ -18,13 +18,15 @@ export async function GET({ params, fetch }) {
     return json(cachedData);
   }
 
-  try {
+  // try {
     const response = await fetch(url, {headers})
     const data = (await response.json()).results[0];
     if (!data) error(404, "Locality not found.");
 
     const properties = {};
+    const properties = {};
     for (const prop of Object.keys(data).filter(p => !skipProps.includes(p))) {
+      properties[prop] = numericProps.some(p => prop.startsWith(p)) ? parseNumericProp(data[prop]) : parseProp(data[prop]);
       properties[prop] = numericProps.some(p => prop.startsWith(p)) ? parseNumericProp(data[prop]) : parseProp(data[prop]);
     }
     const geometry = {type: "Point", coordinates: [properties.lng, properties.lat]};

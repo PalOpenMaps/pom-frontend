@@ -1,6 +1,6 @@
 export function parseProp(prop) {
   // Single/null values in array
-  if (Array.isArray(prop) && prop.length <= 1) return !prop[0].value ? null : prop[0].value;
+  if (Array.isArray(prop) && prop.length <= 1) return !prop[0]?.value ? null : prop[0].value;
   // Multi-references items in array
   if (Array.isArray(prop)) return prop.map(item => item.value);
   // Single value dropdowns

@@ -17,7 +17,7 @@
 	<slot/>
 	<Links>
 		{#each Object.values(items) as item}
-			{@const href = item?.href?.slice(0, 6) === "https:" ? item.href : item.href ? `${base}/${$lang}/${item.href}` : `${base}/${$lang}`}
+			{@const href = item?.href?.startsWith("https:") || item?.href?.startsWith("mailto:") ? item.href : item.href ? `${base}/${$lang}/${item.href}` : `${base}/${$lang}`}
 			<a {href} class:active={$page.url.pathname === href}><Icon type="{item.icon}"/><span>{$t(item)}</span></a>
 		{/each}
 	</Links>
