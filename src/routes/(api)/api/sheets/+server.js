@@ -37,11 +37,12 @@ export async function GET({ fetch }) {
             sheet_number: row.sheet_number_ext ?
               `${row.sheet_number} & ${row.sheet_number_ext}` :
               row.sheet_number,
-            layer: row.layer?.[0]?.value,
+            layer: row.layer?.[0]?.value ?
               `${row.sheet_number} & ${row.sheet_number_ext}` :
               row.sheet_number,
             layer: row.layer?.[0]?.value,
             dropbox_link: row.dropbox_link,
+            thumbnail: row.thumbnail?.[0]?.url || null,
             year: parseNumericProp(row.year)
           }
         };
@@ -51,6 +52,7 @@ export async function GET({ fetch }) {
     }
     
     cache.set("sheets", geojson, expiry);
+    console.log(geojson);
 
     return json(geojson);
   }
