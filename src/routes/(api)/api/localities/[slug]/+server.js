@@ -18,7 +18,7 @@ export async function GET({ params, fetch }) {
     return json(cachedData);
   }
 
-  // try {
+  try {
     const response = await fetch(url, {headers})
     const data = (await response.json()).results[0];
     if (!data) error(404, "Locality not found.");
