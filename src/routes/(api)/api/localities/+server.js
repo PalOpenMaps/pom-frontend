@@ -51,6 +51,6 @@ export async function GET({ fetch }) {
     return json(geojson);
   }
   catch {
-    error(500, "Could not fetch localities.")
+    error(500, "Could not fetch localities.");
   }
 }
