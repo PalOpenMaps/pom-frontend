@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { BASEROW_API_KEY } from '$env/static/private';
+import { baserow_token } from "$lib/config.js";
 import cache from "../cache.js";
 import { parseProp, parseNumericProp } from "$lib/api/utils.js";
 
@@ -11,7 +11,7 @@ const tables = Object.entries(tableCodes)
   .map(t => ({key: t[0], url: `https://base.palopenmaps.org/api/database/rows/table/${t[1]}/?user_field_names=true`}));
 const skipProps = ["id", "order"];
 const numericProps = ["x_min", "x_max", "y_min", "y_max"];
-const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
+const headers = new Headers({Authorization: `Token ${baserow_token}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 // Filter and format Baserow response

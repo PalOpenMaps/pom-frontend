@@ -1,11 +1,11 @@
 import { json, error } from "@sveltejs/kit";
-import { BASEROW_API_KEY } from '$env/static/private';
+import { baserow_token } from "$lib/config.js";
 import cache from "../../cache.js";
 import { parseProp, parseNumericProp } from "$lib/api/utils.js";
 
 const skipProps = ["id", "order"];
 const numericProps = ["lat", "lng", "pop_", "pal_", "jsh_", "oth_"];
-const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
+const headers = new Headers({Authorization: `Token ${baserow_token}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 export async function GET({ params, fetch }) {

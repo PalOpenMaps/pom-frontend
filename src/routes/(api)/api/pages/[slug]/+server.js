@@ -1,10 +1,10 @@
 import { json, error } from "@sveltejs/kit";
 import { parse } from "marked";
-import { BASEROW_API_KEY } from '$env/static/private';
+import { baserow_token } from "$lib/config.js";
 import cache from "../../cache.js";
 
 const skipProps = ["id", "order"];
-const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
+const headers = new Headers({Authorization: `Token ${baserow_token}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 function parseImages(markdown, data) {

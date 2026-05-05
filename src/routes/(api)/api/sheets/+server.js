@@ -1,10 +1,10 @@
 import { json, error } from "@sveltejs/kit";
-import { BASEROW_API_KEY } from '$env/static/private';
+import { baserow_token } from "$lib/config.js";
 import cache from "../cache.js";
 import { parseNumericProp } from "$lib/api/utils.js";
 
 const startUrl = "https://base.palopenmaps.org/api/database/rows/table/712/?user_field_names=true&size=200";
-const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
+const headers = new Headers({Authorization: `Token ${baserow_token}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 export async function GET({ fetch }) {
