@@ -99,10 +99,10 @@
 	}
 
 	function getDates(layer) {
-		let start = layer.start_year ? +layer.start_year.split("-")[0]: null;
-		let end = layer.end_year ? +layer.end_year.split("-")[0]: null;
+		let start = `${layer.start_year}` || null;
+		let end = `${layer.end_year}` || null;
 
-		return start && end ? `${start}&ndash;${end}` : start ? start : end;
+		return start && end ? `${start}&ndash;${end.slice(0, 2) === start.slice(0, 2) ? end.slice(2) : end}` : start ? start : end;
 	}
 
 	function updateHash() {
@@ -483,9 +483,9 @@
 					</InfoBlock>
 				{/if}
 			{:else if panel_status == 'layer'}
-				<h1>{$t(layer.name.slice(0, layer.name.lastIndexOf(',')))}</h1>
+				<h1>{$t(layer[`name_${$lang}`].slice(0, layer[`name_${$lang}`].lastIndexOf(',')))}</h1>
 				<h2>
-					{@html $t(layer.attribution.split(',')[0])}
+					{@html $t(layer[`author`].split(',')[0])}
 				</h2>
 				<InfoBlock label="{$t('Information')}">
 					<div>
@@ -500,16 +500,16 @@
 					{/if}
 				</InfoBlock>
 				<InfoBlock label="{$t('Description')}">
-					<div>{$t(layer.description)}</div>
+					<div>{$t(layer[`description_${$lang}`])}</div>
 				</InfoBlock>
 				{#if toggles.overlay}
 					<hr/>
 					<h1>{$t(overlay)}</h1>
 					<h2>
-						{@html $t(overlay.attribution)}
+						{@html $t(overlay[`author`].split(',')[0])}
 					</h2>
 					<InfoBlock label="{$t('Description')}">
-						<div>{$t(overlay.description)}</div>
+						<div>{$t(overlay[`description_${$lang}`])}</div>
 					</InfoBlock>
 					{#if overlay.edit}
 						<a href="{overlay.edit}{zoom.left + 1}/{center.left.lat}/{center.left.lng}" target="_blank"><Icon type="pen" title="{$t('edit layer')}"/></a>
