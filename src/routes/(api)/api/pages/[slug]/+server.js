@@ -7,6 +7,15 @@ const skipProps = ["id", "order"];
 const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
+function parseImages(markdown, data) {
+  const images = markdown.match(/{image_\d+}/g) || [];
+  for (const img of images) {
+    const index = img.match(/\d+/)?.[0];
+    if (data.images[index]) markdown = markdown.replace(img, data.images[index].url);
+  }
+  return markdown;
+}
+
 export async function GET({ params, fetch }) {
   const slug = params.slug;
   const url = `https://base.palopenmaps.org/api/database/rows/table/705/?user_field_names=true&filter__href__equal=${slug}&size=1`;
@@ -24,13 +33,14 @@ export async function GET({ params, fetch }) {
 
     const page = {};
     for (const prop of Object.keys(data).filter(p => !skipProps.includes(p))) {
-      page[prop] = prop.startsWith("body") ? parse(data[prop]) : data[prop];
+      page[prop] = prop.startsWith("body") ? parse(parseImages(data[prop], data)) : data[prop];
     }
     cache.set(slug, page, expiry);
 
     return json(page);
   }
-  catch {
+  catch(err) {
+    console.log(err);
     error(500, "Could not fetch page.")
   }
 }

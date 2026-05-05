@@ -7,7 +7,7 @@
   const lang = getContext("lang");
 	const t = getContext("t");
 
-  $: console.log(data.page, $lang);
+  // $: console.log(data.page, $lang);
 </script>
 
 <svelte:head>

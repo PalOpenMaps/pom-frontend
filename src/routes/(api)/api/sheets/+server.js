@@ -51,7 +51,6 @@ export async function GET({ fetch }) {
     }
     
     cache.set("sheets", geojson, expiry);
-    console.log(geojson);
 
     return json(geojson);
   }
