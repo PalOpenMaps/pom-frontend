@@ -1,21 +1,15 @@
-// export const prerender = true;
-
-import { getPlace } from "$lib/utils";
+import { error } from "@sveltejs/kit";
+import { resolve } from "$app/paths";
   
-export async function load({ params, parent, fetch }) {
-	const stuff = await parent();
-	let slug = params.slug.replace("/","");
+export async function load({ params, fetch }) {
+	const slug = params.slug.replace("/","");
+	if (!slug) return;
 
-	let places = stuff.places; // places is loaded once in __layout.svelte and passed to this route
-	let place;
-	if (slug && places.features.find(f => f.properties.slug == slug)) {
-		place = await getPlace(stuff.data_url, slug, fetch);
-	} else {
-		place = null;	
+	try {
+		const url = resolve(`/api/localities/${slug}`);
+		const place = await (await fetch(url)).json();
+		return { place };
+	} catch {
+		return error(404, "Place not found");
 	}
-
-	let layers = stuff.layers; // layers loaded in same way as places
-	let sheets = stuff.sheets; // sheets ditto
-
-	return { layers, sheets, places, place };
 }

@@ -7,7 +7,7 @@
 	import { page } from '$app/stores';
 	import { afterNavigate, goto } from "$app/navigation";
 	import mapStyle from "$lib/style.json";
-	import { makeDataset, makeColors, makeFilter } from "$lib/utils";
+	import { makeDataset, makeColors, makeFilter, makeMapUrl, mapUrlToCoords, proj } from "$lib/utils";
 	import { maxBounds } from "$lib/config";
 	import { Map, MapSource, MapLayer, MapTooltip } from "@onsvisual/svelte-maps";
 
@@ -27,11 +27,11 @@
 	let { config, sheets, places, place } = data;
 	$: ({ config, sheets, places, place } = data);
 
-	const data_url = getContext("data_url");
 	const lang = getContext("lang");
 	const rtl = getContext("rtl");
 	const t = getContext("t");
 	const menu_active = getContext("menu_active");
+	const data_url = getContext("data_url");
 
 	const color_options = [{key: "status", label: "change since 1948"}, {key: "group", label: "population group"}];
 	const year_min_max = [1881, (new Date()).getFullYear()];
@@ -59,6 +59,10 @@
 	let statuses_active = [...statuses_arr];
 	let groups_active = [...groups_arr];
 	let location = place ? {lng: place.geometry.coordinates[0], lat: place.geometry.coordinates[1], zoom: 14} : {lng: 34.4660, lat: 31.5019, zoom: 13.5};
+	let import_url = null;
+	let coord_proj = "wgs84";
+	let coord_input = {x: null, y: null};
+	$: center_proj = proj(center.left, "wgs84", coord_proj);
 
 	let toggles = {
 		info: true,	
@@ -67,6 +71,7 @@
 		overlay: false,
 		split: false,
 		download: false,
+		tools: false,
 		threed: false
 	};
 	let overlay_groups = {
@@ -103,6 +108,25 @@
 		let end = `${layer.end_year}` || null;
 
 		return start && end ? `${start}&ndash;${end.slice(0, 2) === start.slice(0, 2) ? end.slice(2) : end}` : start ? start : end;
+	}
+
+	function flyToCoords(x, y, from) {
+		if (!(Number.isFinite(+x) && Number.isFinite(+y))) {
+			console.log("Cannot parse coordinates");
+			return;
+		}
+		const center = proj([+x, +y], from, "wgs84");
+		map?.left?.flyTo?.({ center, zoom: 14 });
+	}
+
+	function flyToUrl(url) {
+		const { center, zoom } = mapUrlToCoords(url);
+		if (!center || !zoom) {
+			console.log("Cannot parse map URL");
+			return;
+		}
+		console.log({center, zoom});
+		map?.left?.flyTo?.({ center, zoom });
 	}
 
 	function updateHash() {
@@ -259,23 +283,64 @@
 	</Accordion>
 	<Accordion label="{$t('Download maps')}" bind:open={toggles.download}>
 		{#if sheets_selected[0]}
-			{#if filterSheets(sheets_selected, layer.name_en)[0]}
+			{#if filterSheets(sheets_selected, layer.key)[0]}
 				<InfoHeader label="{$t('Sheets from this base map')}"/>
-				{#each filterSheets(sheets_selected, layer.name_en) as sheet (sheet.file_name)}
+				{#each filterSheets(sheets_selected, layer.key) as sheet (sheet.file_name)}
 					<Sheet {config} {sheet}/>
 				{/each}
 			{/if}
-			{#if filterSheets(sheets_selected, layer.name_en, false)[0]}
+			{#if filterSheets(sheets_selected, layer.key, false)[0]}
 				<hr/>
 				<InfoHeader label="{$t('Sheets from other base maps')}"/>
-				{#each filterSheets(sheets_selected, layer.name_en, false) as sheet (sheet.file_name)}
+				{#each filterSheets(sheets_selected, layer.key, false) as sheet (sheet.file_name)}
 					<Sheet {config} {sheet}/>
 				{/each}
 			{/if}
 		{:else}
 			{$t('Click anywhere on the map to see sheets available to download covering that location')}
 		{/if}
-		<button class="btn btn-primary" style:display="block" on:click={() => {toggles.download = false; sheets_selected = [];}}>{$t('Close downloads')}</button>
+		<hr/>
+		<button class="btn" style:display="block" on:click={() => {toggles.download = false; sheets_selected = [];}}><Icon type="close"/>  {$t('Close downloads')}</button>
+	</Accordion>
+	<Accordion label="{$t('Location tools')}" bind:open={toggles.tools}>
+		<InfoHeader label="{$t('Map coordinates')}"/>
+		<form class="mt-xs">
+			<label><input type="radio" name="coord_proj" value="wgs84" bind:group={coord_proj}><span>{$t('Longitude/latitude')}</span></label>
+			<label><input type="radio" name="coord_proj" value="pal23" bind:group={coord_proj}><span>{$t('Palestine grid')}</span></label>
+			<hr/>
+			<div class="xy-coords">
+				<label for="center-x">{$t('X:')}</label>
+				<input id="center-x" value={center_proj[0]} class="coord-input" readonly/>
+				<label for="center-y">{$t('Y:')}</label>
+				<input id="center-y" value={center_proj[1]} class="coord-input" readonly/>
+			</div>
+			<button class="btn btn-primary mb-m">Copy coordinates</button>
+		</form>
+		<form on:submit|preventDefault={() => flyToCoords(coord_input.x, coord_input.y, coord_proj)}>
+			<div class="xy-coords">
+				<label for="input-x">{$t('X:')}</label>
+				<input id="input-x" placeholder={$t('Longitude')} class="coord-input" bind:value={coord_input.x}/>
+				<label for="input-y">{$t('Y:')}</label>
+				<input id="input-y" placeholder={$t('Latitude')} class="coord-input" bind:value={coord_input.y}/>
+			</div>
+			<button class="btn btn-primary mb-l">{$t('Go to coordinates')}</button>
+		</form>
+		<InfoHeader label={$t('Other map services')}/>
+		<div class="mt-xs">{$t('Navigate to current location')}</div>
+		<div class="mb-m">
+			<a href={makeMapUrl(center.left, zoom.left, "osm")} target="_blank">{$t('OpenStreetMap')}</a><br/>
+			<a href={makeMapUrl(center.left, zoom.left, "google")} target="_blank">{$t('Google maps')}</a><br/>
+			<a href={makeMapUrl(center.left, zoom.left, "bing")} target="_blank">{$t('Bing maps')}</a>
+		</div>
+		<form on:submit|preventDefault={() => flyToUrl(import_url)}>
+			<label for="input-url">{$t('Import a map URL')}</label>
+			<input id="input-url" class="mapurl-input" placeholder={$t('Paste from OSM, Google or Bing')} bind:value={import_url}/>
+			<button class="btn btn-primary mb-l">{$t('Go to location')}</button>
+		</form>
+		<InfoHeader label="{$t('Historical map digitisation')}"/>
+		<a href="{config.layers["pal1940"].edit}{zoom?.left}/{center?.left?.lat}/{center?.left?.lng}" target="_blank" class="inline-block mt-xs mb-m"><Icon type="pen"/> {$t('Edit this location')}</a>
+		<hr/>
+		<button class="btn" style:display="block" on:click={() => toggles.tools = false}><Icon type="close"/> {$t('Close location tools')}</button>
 	</Accordion>
 	<Links>
 		<label><input type="checkbox" bind:checked={toggles.split}/><span>{$t('Toggle split-screen')}</span></label>
@@ -394,6 +459,11 @@
 			</MapCompare>
 		{/if}
 	</div>
+	{#if toggles.tools && $menu_active}
+		<div class="crosshair-container">
+			<Icon type="crosshair"/>
+		</div>
+	{/if}
 	<div id="toggles" class:toggles-rtl={$rtl}>
 		<label title="{$t('Toggle places')}" class:checked={toggles.places}><input type="checkbox" bind:checked={toggles.places} /><Icon type="marker" /></label>
 		<label title="{$t('Toggle overlays')}" class:checked={toggles.overlay}><input type="checkbox" bind:checked={toggles.overlay} /><Icon type="layers" /></label>
@@ -410,19 +480,17 @@
 				<h1>{place.properties[`name_${$lang}`]}</h1>
 				<h2>
 					{#if $lang == "ar"}
-						{$t(place.properties.type)}
-						{place.properties.change_2016 !== "Appropriated" ? $t(place.properties.group) : ""} {$t('in')}
+						{$t(place.properties.type)} {$t('in')}
 						{$t('sub-district')} {$t(place.properties.subdistrict_1945)}
 					{:else}
-						{place.properties.change_2016 !== "Appropriated" ? place.properties.group : ""}
-						{place.properties.change_2016 !== "Appropriated" ? place.properties.type.toLowerCase() : place.properties.type} in
+						{place.properties.type} in
 						{place.properties.subdistrict_1945} {$t('sub-district')}
 					{/if}
 				</h2>
 				<InfoBlock label="{$t('Change since 1948')}">
 					<div>
-						<div class="bullet" style:background-color="{config.statuses[place.properties.change_2016].color}"/>
-						{$t(config.statuses[place.properties.change_2016])}
+						<div class="bullet" style:background-color="{config.statuses[place.properties.change_1945].color}"/>
+						{$t(config.statuses[place.properties.change_1945])}
 					</div>
 				</InfoBlock>
 				{#if place.properties.start || place.properties.end}
@@ -460,7 +528,7 @@
 						<BarChart data={makeDataset(place)} groups={config.groups} {t}/>
 					</InfoBlock>
 				{/if}
-				{#if place.properties.poha}
+				{#if place.properties.poha[0]}
 					<InfoBlock label="{place.properties[`name_${$lang}`]} {$t('on Palestinian Oral History Archive')}">
 						{#each place.properties.poha as item}
 							<div><img src="https://libraries.aub.edu.lb/poha-viewer/content/thumbnails/{item.thumbnail}" class="thumbnail" alt=""/></div>
@@ -637,6 +705,7 @@
 		line-height: 1;
 	}
   .btn {
+	display: inline-block;
     background-color: white;
     color: #333;
     border: 2px solid #333;
@@ -671,5 +740,40 @@
 	}
 	.year-filter > input[type=number] {
 		margin-left: 6px;
+	}
+	.crosshair-container {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+		top: 50px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		color: white;
+		background: rgba(0, 0, 0, 0.5);
+		font-size: 2em;
+	}
+	.xy-coords {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		width: 100%;
+		gap: 4px;
+	}
+	.xy-coords > label {
+		width: 22px !important;
+		flex-shrink: 1;
+	}
+	.coord-input, .mapurl-input {
+		height: 40px;
+	}
+	.coord-input {
+		min-width: 0;
+		flex-grow: 1;
+	}
+	.mapurl-input {
+		width: 100%;
 	}
 </style>

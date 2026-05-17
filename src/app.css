@@ -148,3 +148,39 @@ article ol li::before {
   border: 2px solid #222;
   border-radius: 50%;
 }
+
+.inline-block {
+	display: inline-block;
+}
+
+.mb-l {
+	margin-bottom: 24px !important;
+}
+
+.mb-m {
+	margin-bottom: 18px !important;
+}
+
+.mb-s {
+	margin-bottom: 12px !important;
+}
+
+.mb-xs {
+	margin-bottom: 8px !important;
+}
+
+.mt-l {
+	margin-top: 24px !important;
+}
+
+.mt-m {
+	margin-top: 18px !important;
+}
+
+.mt-s {
+	margin-top: 12px !important;
+}
+
+.mt-xs {
+	margin-top: 8px !important;
+}

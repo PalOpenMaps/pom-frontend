@@ -1,9 +1,9 @@
 <script>
   import { getContext } from "svelte";
+  import { base } from '$app/paths';
 
   export let data;
 
-  const data_url = getContext("data_url");
   const lang = getContext("lang");
 	const t = getContext("t");
 
@@ -13,7 +13,7 @@
 <svelte:head>
   <title>{data.page[`name_${$lang}`]} - {$t('Palestine Open Maps')}</title>
   <meta property="og:title" content="{data.page[`name_${$lang}`]} - {$t('Palestine Open Maps')}" />
-  <meta property="og:image" content="{data_url}/assets/img/haifa-crop.jpg" />
+  <meta property="og:image" content="{base}/og-image.jpg" />
 </svelte:head>
 
 <h1>{data.page[`name_${$lang}`]}</h1>

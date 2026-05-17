@@ -1,10 +1,9 @@
 import { json, error } from "@sveltejs/kit";
-import { BASEROW_API_KEY } from '$env/static/private';
+import { base_headers as headers } from '$lib/config.js';
 import cache from "../cache.js";
 import { parseNumericProp } from "$lib/api/utils.js";
 
 const startUrl = "https://base.palopenmaps.org/api/database/rows/table/712/?user_field_names=true&size=200";
-const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 export async function GET({ fetch }) {
@@ -41,7 +40,7 @@ export async function GET({ fetch }) {
               row.sheet_number,
             layer: row.layer?.[0]?.value,
             dropbox_link: row.dropbox_link,
-            thumbnail: row.thumbnail?.[0]?.url || null,
+            image: row.image?.[0]?.url || null,
             year: parseNumericProp(row.year)
           }
         };

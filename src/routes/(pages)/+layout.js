@@ -1,11 +1,13 @@
 import { resolve } from "$app/paths";
-import { getDataUrl, getPlaces, getConfig, getSheets } from "$lib/utils";
+import { getData } from "$lib/utils";
+import { data_static_url } from "$lib/config";
 
 export async function load({ fetch }) {
-	let data_url = await getDataUrl(true, fetch);
-	let places = await getPlaces(resolve("/api/localities"), fetch);
-	let config = await getConfig(resolve("/api/config"), fetch);
-	let sheets = await getSheets(resolve("/api/sheets"), config, fetch);
+	const data = await Promise.all([
+		getData(resolve("/api/localities"), fetch),
+		getData(resolve("/api/sheets"), fetch),
+		getData(resolve("/api/config"), fetch)
+	]);
 
-	return { places, config, sheets, data_url };
+	return { places: data[0], sheets: data[1], config: data[2], data_url: data_static_url };
 }

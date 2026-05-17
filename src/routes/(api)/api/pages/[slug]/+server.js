@@ -1,17 +1,17 @@
 import { json, error } from "@sveltejs/kit";
 import { parse } from "marked";
-import { BASEROW_API_KEY } from '$env/static/private';
+import { base_headers as headers } from '$lib/config.js';
 import cache from "../../cache.js";
 
 const skipProps = ["id", "order"];
-const headers = new Headers({Authorization: `Token ${BASEROW_API_KEY}`});
 const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 function parseImages(markdown, data) {
+  data.image = data.image.map(img => img.url);
   const images = markdown.match(/{image_\d+}/g) || [];
   for (const img of images) {
     const index = img.match(/\d+/)?.[0];
-    if (data.images[index]) markdown = markdown.replace(img, data.images[index].url);
+    if (data.image[index]) markdown = markdown.replace(img, data.image[index]);
   }
   return markdown;
 }

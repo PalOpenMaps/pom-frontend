@@ -14,7 +14,6 @@ export async function load({ parent, fetch, params }) {
 
   const url = resolve(`/api/pages/${params.page}`);
   const data = await (await fetch(url)).json();
-  // data.content = data.content.replaceAll("%7Bassets%7D", `${stuff.data_url}/assets`);
 
   return {page: data};
 }

@@ -5,7 +5,6 @@
   export let sheet;
   export let config;
 
-  const data_url = getContext("data_url");
 	const t = getContext("t");
   const layer = config.layers[sheet.layer];
   const author = [layer.author].flat().map(a => config.authors[a]);
@@ -14,7 +13,7 @@
 <div class="sheet">
   <div>
     <a href="{sheet.dropbox_link}">
-      <img src="{sheet.thumbnail}" alt="{sheet.name}">
+      <img src="{sheet.image}" alt="{sheet.name}">
     </a>
   </div>
   <div class="sheet-info">
