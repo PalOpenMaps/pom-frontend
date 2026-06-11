@@ -1,10 +1,9 @@
 import { json, error } from "@sveltejs/kit";
-import { base_headers as headers } from '$lib/config.js';
+import { base_headers as headers, cache_lifetime } from '$lib/config.js';
 import cache from "../cache.js";
 import { parseNumericProp } from "$lib/api/utils.js";
 
 const startUrl = "https://base.palopenmaps.org/api/database/rows/table/712/?user_field_names=true&size=200";
-const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 export async function GET({ fetch }) {
 
@@ -49,7 +48,7 @@ export async function GET({ fetch }) {
       else url = data.next.replace("http", "https");
     }
     
-    cache.set("sheets", geojson, expiry);
+    cache.set("sheets", geojson, cache_lifetime);
 
     return json(geojson);
   }

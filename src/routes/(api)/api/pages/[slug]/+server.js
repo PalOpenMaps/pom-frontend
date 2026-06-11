@@ -1,10 +1,9 @@
 import { json, error } from "@sveltejs/kit";
 import { parse } from "marked";
-import { base_headers as headers } from '$lib/config.js';
+import { base_headers as headers, cache_lifetime } from '$lib/config.js';
 import cache from "../../cache.js";
 
 const skipProps = ["id", "order"];
-const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 function parseImages(markdown, data) {
   data.image = data.image.map(img => img.url);
@@ -35,7 +34,7 @@ export async function GET({ params, fetch }) {
     for (const prop of Object.keys(data).filter(p => !skipProps.includes(p))) {
       page[prop] = prop.startsWith("body") ? parse(parseImages(data[prop], data)) : data[prop];
     }
-    cache.set(slug, page, expiry);
+    cache.set(slug, page, cache_lifetime);
 
     return json(page);
   }

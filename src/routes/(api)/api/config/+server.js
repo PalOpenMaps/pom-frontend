@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { base_headers as headers } from '$lib/config.js';
+import { base_headers as headers, cache_lifetime } from '$lib/config.js';
 import cache from '../cache.js';
 import { parseProp, parseNumericProp } from '$lib/api/utils.js';
 
@@ -30,7 +30,6 @@ const numericProps = [
 	'start_year',
 	'end_year'
 ];
-const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 // Filter and format Baserow response
 function formatConfig(data) {
@@ -73,7 +72,7 @@ export async function GET({ fetch }) {
 			await Promise.all(tables.map(async (t) => getConfig(t, fetch)))
 		);
 
-		cache.set('config', config, expiry);
+		cache.set('config', config, cache_lifetime);
 
 		return json(config);
 	} catch {

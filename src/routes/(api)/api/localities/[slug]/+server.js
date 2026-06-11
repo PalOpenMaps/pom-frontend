@@ -1,11 +1,10 @@
 import { json, error } from "@sveltejs/kit";
-import { base_headers as headers } from '$lib/config.js';
+import { base_headers as headers, cache_lifetime} from '$lib/config.js';
 import cache from "../../cache.js";
 import { parseProp, parseNumericProp } from "$lib/api/utils.js";
 
 const skipProps = ["id", "order"];
 const numericProps = ["lat", "lng", "pop_", "pal_", "jsh_", "oth_"];
-const expiry = 4 * 60 * 60; // 4 hour cache expiry
 
 export async function GET({ params, fetch }) {
   const slug = params.slug;
@@ -36,7 +35,7 @@ export async function GET({ params, fetch }) {
     const geometry = {type: "Point", coordinates: [properties.lng, properties.lat]};
     const feature = {type: "Feature", properties, geometry};
     
-    cache.set(slug, feature, expiry);
+    cache.set(slug, feature, cache_lifetime);
 
     return json(feature);
   }

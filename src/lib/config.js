@@ -13,3 +13,4 @@ export const maxBounds = [[30.5, 29.0], [39.4, 33.9]];
 
 const headers_entries = [["QXV0aG9yaXphdGlvbg==", "VG9rZW4gSFVmc1p2dHVNWUNOZTFkSUtQMzNyVXFoWXVIdDRWRjY="].map(d => atob(d))];
 export const base_headers = new Headers(Object.fromEntries(headers_entries));
+export const cache_lifetime = 6 * 60 * 60; // 6 hour cache expiry
