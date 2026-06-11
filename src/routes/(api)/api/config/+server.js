@@ -3,19 +3,21 @@ import { base_headers as headers } from '$lib/config.js';
 import cache from '../cache.js';
 import { parseProp, parseNumericProp } from '$lib/api/utils.js';
 
-const tableCodes = {
-	sources: 707,
-	authors: 708,
-	groups: 709,
-	statuses: 710,
-	pages: 705,
-	translations: 706,
-	layers: 711
-};
-const tables = Object.entries(tableCodes).map((t) => ({
-	key: t[0],
-	url: `https://base.palopenmaps.org/api/database/rows/table/${t[1]}/?user_field_names=true`
-}));
+function makeUrl(id, fields = null) {
+    let url = `https://base.palopenmaps.org/api/database/rows/table/${id}/?user_field_names=true`;
+    if (fields) url += `&include=${fields.join(",")}`;
+    return url;
+}
+
+const tables = [
+	{key: "sources", url: makeUrl(707)},
+	{key: "authors", url: makeUrl(708)},
+	{key: "groups", url: makeUrl(709)},
+	{key: "statuses", url: makeUrl(710)},
+	{key: "pages", url: makeUrl(705, ["name_en", "name_ar", "href", "icon"])},
+	{key: "translations", url: makeUrl(706)},
+	{key: "layers", url: makeUrl(711)}
+];
 const skipProps = ['id', 'order'];
 const numericProps = [
 	'x_min',
