@@ -111,22 +111,30 @@
 	}
 
 	function flyToCoords(x, y, from) {
-		if (!(Number.isFinite(+x) && Number.isFinite(+y))) {
-			console.log("Cannot parse coordinates");
+		if (!(Number.isFinite(+x) && Number.isFinite(+y)) || (!x && !y)) {
+			console.warn("Cannot parse coordinates");
 			return;
 		}
 		const center = proj([+x, +y], from, "wgs84");
-		map?.left?.flyTo?.({ center, zoom: 14 });
+        try {
+            map?.left?.flyTo?.({ center, zoom: 14 });
+        } catch(err) {
+            console.warn(err);
+        }
 	}
 
 	function flyToUrl(url) {
 		const { center, zoom } = mapUrlToCoords(url);
 		if (!center || !zoom) {
-			console.log("Cannot parse map URL");
+			console.warn("Cannot parse map URL");
 			return;
 		}
 		console.log({center, zoom});
-		map?.left?.flyTo?.({ center, zoom });
+        try {
+            map?.left?.flyTo?.({ center, zoom });
+        } catch(err) {
+            console.warn(err);
+        }
 	}
 
 	function updateHash() {
@@ -304,7 +312,10 @@
 	</Accordion>
 	<Accordion label="{$t('Location tools')}" bind:open={toggles.tools}>
 		<InfoHeader label="{$t('Map coordinates')}"/>
-		<form class="mt-xs">
+		<form class="mt-xs" on:submit|preventDefault={() => {
+                navigator.clipboard.writeText(center_proj.join(","))
+                    .then(() => alert("Coordinates copied to clipboard"));
+            }}>
 			<label><input type="radio" name="coord_proj" value="wgs84" bind:group={coord_proj}><span>{$t('Longitude/latitude')}</span></label>
 			<label><input type="radio" name="coord_proj" value="pal23" bind:group={coord_proj}><span>{$t('Palestine grid')}</span></label>
 			<hr/>

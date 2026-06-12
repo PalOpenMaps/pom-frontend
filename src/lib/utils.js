@@ -174,20 +174,21 @@ export function mapUrlToCoords(url = '') {
 
 	const regex_coords = new RegExp(
 		type === 'osm'
-			? /(?<=\d\/)-*\d+.\d+\/-*\d+.\d+$/
+			? /(?<=\d\/)-*\d+.\d+\/-*\d+.\d+/
 			: type === 'google'
-			? /(?<=@)-*\d+.\d+,-*\d+.\d+(?=,)/
-			: /(?<=cp=)-*\d+.\d+~-*\d+.\d+(?=&)/
+			? /(?<=@)-*\d+.\d+,-*\d+.\d+/
+			: /(?<=cp=)-*\d+.\d+~-*\d+.\d+/
 	);
 	const regex_zoom = new RegExp(
 		type === 'osm'
 			? /(?<=map=)\d+(?=\/)/
 			: type === 'google'
-			? /(?<=,)\d+(?=z)/
-			: /(?<=lvl=)\d+(?=&)/
+			? /(?<=,)\d+(.\d+){0,1}(?=z)/
+			: /(?<=lvl=)\d+(.\d+){0,1}/
 	);
 	const coords = url.match(regex_coords)?.[0];
 	const zoom = url.match(regex_zoom)?.[0];
+    console.log({url, type, regex_coords, regex_zoom});
 
 	return !coords || !zoom
 		? { centre: null, zoom: null }
