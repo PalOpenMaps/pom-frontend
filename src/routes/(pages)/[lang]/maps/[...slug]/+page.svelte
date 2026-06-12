@@ -129,7 +129,6 @@
 			console.warn("Cannot parse map URL");
 			return;
 		}
-		console.log({center, zoom});
         try {
             map?.left?.flyTo?.({ center, zoom });
         } catch(err) {
